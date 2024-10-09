@@ -21,18 +21,14 @@ data['Diagnostic'] = data['Diagnostic'].apply(lambda x: 1 if x == 'Positif' else
 X = data[['Nodule', 'Douleur', 'Changement de forme', 'Écoulement', 'Rougeur', 'Ganglions', 'Antécédents familiaux']]
 y = data['Diagnostic']
 
-# Diviser les données en ensemble d'entraînement et de test
+# Diviser les données en ensemble d'entraînement et de test (20% pour le test et 80% pour le train)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Entraîner le modèle d'arbre de décision
-model = DecisionTreeClassifier()
+model = DecisionTreeClassifier(max_depth=5, min_samples_split=10, min_samples_leaf=3)
 model.fit(X_train, y_train)
 
 # Prédire sur l'ensemble de test
 y_pred = model.predict(X_test)
-
-# Afficher la précision
 print(f"Précision du modèle: {accuracy_score(y_test, y_pred)}")
-
-# Sauvegarder le modèle
-joblib.dump(model, 'decision_tree_model.pkl')
+#joblib.dump(model, 'decision_tree_model.pkl')

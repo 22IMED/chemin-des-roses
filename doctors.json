@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Dr. Alice Dupont",
+        "specialty": "Oncologue",
+        "department": "75",
+        "city": "Paris"
+    },
+    {
+        "name": "Dr. Jean Martin",
+        "specialty": "Chirurgien",
+        "department": "75",
+        "city": "Paris"
+    },
+    {
+        "name": "Dr. Sophie Durant",
+        "specialty": "Médecin Généraliste",
+        "department": "92",
+        "city": "Nanterre"
+    },
+    {
+        "name": "Dr. Marc Leclerc",
+        "specialty": "Radiologue",
+        "department": "93",
+        "city": "Bobigny"
+    }
+]

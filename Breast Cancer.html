@@ -45,6 +45,8 @@
             margin: 5px 0;
             padding: 8px;
             border-radius: 4px;
+            display: flex;
+            align-items: center;
         }
 
         .user-message {
@@ -57,6 +59,12 @@
             text-align: left;
             background-color: #fcb9cc;
             color: #ac596f;
+        }
+
+        .message img {
+            width: 30px; /* Ajustez la taille de l'image selon vos besoins */
+            height: 30px; /* Ajustez la taille de l'image selon vos besoins */
+            margin-right: 10px; /* Espacement entre l'image et le texte */
         }
 
         .input-container {
@@ -106,11 +114,9 @@
             <button id="send-button"><i class="fas fa-paper-plane"></i></button>
         </div>
 
-        <h2 id="result"></h2>
     </div>
 
     <script>
-        // Questions et réponses à envoyer
         let questions = [
             { question: "Avez-vous un nodule ? (oui/non)", key: "Nodule" },
             { question: "Ressentez-vous de la douleur ? (oui/non)", key: "Douleur" },
@@ -123,8 +129,15 @@
 
         let currentQuestionIndex = 0;
         let answers = {};
+        let visitDoctorRecommended = false;
+        let askingDepartment = false;
+        let doctors = [];
 
-        // Mots-clés pour les réponses "oui" et "non"
+        async function loadDoctors() {
+            const response = await fetch('doctors.json');
+            doctors = await response.json();
+        }
+
         const yesAnswers = [
             'oui', 'yes', 'ouais', 'affirmatif', 'certainement',
             'absolument', 'exactement', 'tout à fait', 'tout a fait', 
@@ -136,30 +149,30 @@
             'jamais', 'négation', 'non merci', 'non pas vraiment'
         ];
 
-        // Mots ou phrases à détecter
-        const specificValues = [
-            'sensation', 'symptôme', 'anomalie', 'visite chez le médecin'
-        ];
-
         function addMessage(text, type) {
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message ' + type + '-message';
-            messageDiv.textContent = text;
+
+            // Créer l'élément d'image
+            const img = document.createElement('img');
+            img.src = type === 'user' ? '' : 'Bot.jpg'; // Assurez-vous que ces images existent
+
+            if (type!='user'){messageDiv.appendChild(img);}
+            if (type=='user'){messageDiv.appendChild(document.createTextNode('Vous : '+text));}
+            else{messageDiv.appendChild(document.createTextNode(text));}
             document.getElementById('chat').appendChild(messageDiv);
-            document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight; // Faire défiler vers le bas
+            document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
         }
 
         function askQuestion() {
             if (currentQuestionIndex < questions.length) {
                 addMessage(questions[currentQuestionIndex].question, 'bot');
             } else {
-                // Si toutes les questions sont posées, prédisez le diagnostic
                 predict();
             }
         }
 
         async function predict() {
-            // Envoyer les réponses à l'API Flask
             const response = await fetch('http://127.0.0.1:5000/predict', {
                 method: 'POST',
                 headers: {
@@ -174,57 +187,71 @@
             }
 
             const result = await response.json();
-            document.getElementById('result').innerText = `Diagnostic : ${result.prediction}`;
-            addMessage(`Diagnostic : ${result.prediction}`, 'bot'); // Afficher le diagnostic dans le chat
+            addMessage(`Diagnostic : ${result.prediction}`, 'bot');
+
+            if (result.prediction.includes("Visitez un médecin")) {
+                visitDoctorRecommended = true;
+                askDepartment();
+            }
+        }
+
+        function askDepartment() {
+            askingDepartment = true;
+            addMessage("Dans quel département vous trouvez-vous ?", 'bot');
+        }
+
+        function suggestDoctors(department) {
+            const filteredDoctors = doctors.filter(doctor => doctor.department === department);
+            if (filteredDoctors.length > 0) {
+                addMessage("Voici quelques médecins dans votre département :", 'bot');
+                filteredDoctors.forEach(doctor => {
+                    addMessage(`${doctor.name} - ${doctor.specialty} à ${doctor.city}`, 'bot');
+                });
+            } else {
+                addMessage("Désolé, je n'ai trouvé aucun médecin dans votre département.", 'bot');
+            }
         }
 
         document.getElementById('send-button').addEventListener('click', () => {
             const userInput = document.getElementById('user-input').value.toLowerCase().trim();
-            
-            // Nettoyer la réponse pour la normaliser
-            const cleanedInput = userInput.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').replace(/\s+/g, ' '); // Enlève caractères spéciaux et espaces multiples
+            const cleanedInput = userInput.replace(/[^0-9]/g, '').trim();
 
-            // Vérification de la réponse de l'utilisateur
-            if (isYes(cleanedInput)) {
-                answers[questions[currentQuestionIndex].key] = 'oui';
-            } else if (isNo(cleanedInput)) {
-                answers[questions[currentQuestionIndex].key] = 'non';
-            } else {
-                // Vérifier si le texte contient des valeurs spécifiques
-                if (containsSpecificValues(cleanedInput)) {
-                    addMessage('Vous avez mentionné des éléments importants. Veuillez continuer.', 'bot');
+            if (askingDepartment) {
+                addMessage(userInput, 'user');
+                suggestDoctors(cleanedInput);
+                askingDepartment = false;
+                document.getElementById('user-input').value = '';
+                return;
+            }
+
+            if (currentQuestionIndex < questions.length) {
+                if (isYes(userInput)) {
+                    answers[questions[currentQuestionIndex].key] = 'oui';
+                } else if (isNo(userInput)) {
+                    answers[questions[currentQuestionIndex].key] = 'non';
                 } else {
                     addMessage('Veuillez répondre par "oui" ou "non".', 'bot');
                     return;
                 }
+
+                addMessage(userInput, 'user');
+
+                currentQuestionIndex++;
+                document.getElementById('user-input').value = '';
+                askQuestion();
             }
-
-            // Afficher le message de l'utilisateur
-            addMessage(userInput, 'user');
-
-            // Passer à la question suivante
-            currentQuestionIndex++;
-            document.getElementById('user-input').value = '';
-            askQuestion();
         });
 
-        // Fonction pour vérifier si la réponse est un "oui"
-        function isYes(input) {
-            return yesAnswers.some(answer => input.includes(answer));
+        function isYes(answer) {
+            return yesAnswers.includes(answer);
         }
 
-        // Fonction pour vérifier si la réponse est un "non"
-        function isNo(input) {
-            return noAnswers.some(answer => input.includes(answer));
+        function isNo(answer) {
+            return noAnswers.includes(answer);
         }
 
-        // Fonction pour vérifier si le texte contient des valeurs spécifiques
-        function containsSpecificValues(input) {
-            return specificValues.some(value => input.includes(value));
-        }
-
-        // Commencer le processus
+        loadDoctors();
         askQuestion();
     </script>
 </body>
-</html>
+</html

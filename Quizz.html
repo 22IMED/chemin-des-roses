@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Prévention sur le Cancer du Sein</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #E299AD;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .question {
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .option {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .option:hover {
+            background-color: #fcb9cc;
+        }
+
+        #result {
+            text-align: center;
+            font-size: 20px;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+
+        .wrong {
+            color: red;
+            font-weight: bold;
+        }
+
+        .explanation {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Quiz de Prévention sur le Cancer du Sein</h1>
+        <form id="quiz-form"></form>
+        <div id="result" class="mt-4"></div>
+        <div id="explanations" class="mt-4"></div>
+    </div>
+
+    <script>
+        fetch('quizQuestions.json')
+            .then(response => response.json())
+            .then(data => {
+                const quizForm = document.getElementById('quiz-form');
+                data.questions.forEach((question, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.classList.add('question', 'mt-4');
+                    questionDiv.innerHTML = `
+                        <h5>Question ${index + 1}</h5>
+                        <p>${question.question}</p>
+                    `;
+                    question.options.forEach(option => {
+                        questionDiv.innerHTML += `
+                            <div class="option">
+                                <input type="radio" name="q${index + 1}" value="${option.value}" id="q${index + 1}-${option.value}">
+                                <label for="q${index + 1}-${option.value}">${option.value}) ${option.text}</label>
+                            </div>
+                        `;
+                    });
+                    quizForm.appendChild(questionDiv);
+                });
+                quizForm.innerHTML += '<button type="submit" class="btn btn-primary mt-3" id="submit-button">Soumettre</button>';
+
+                quizForm.onsubmit = function(event) {
+                    event.preventDefault();
+                    let score = 0;
+                    const explanationsDiv = document.getElementById('explanations');
+                    explanationsDiv.innerHTML = ''; // Réinitialiser les explications
+
+                    data.questions.forEach((question, index) => {
+                        const userAnswer = document.querySelector(`input[name="q${index + 1}"]:checked`)?.value;
+
+                        // Créer un élément pour l'explication de chaque question
+                        const explanationDiv = document.createElement('div');
+                        explanationDiv.classList.add('explanation');
+                        explanationDiv.innerHTML = `<strong>Explication :</strong> ${question.explanation}`;
+                        const questionDiv = quizForm.children[index]; // Récupérer le div de la question
+
+                        question.options.forEach(option => {
+                            const label = document.querySelector(`label[for="q${index + 1}-${option.value}"]`);
+                            if (option.value === question.answer) {
+                                label.classList.add('correct');
+                            } else if (userAnswer === option.value) {
+                                label.classList.add('wrong');
+                            }
+                        });
+
+                        // Ajouter l'explication sous la question
+                        questionDiv.appendChild(explanationDiv);
+                        
+                        // Calculer le score
+                        if (userAnswer === question.answer) {
+                            score++;
+                        }
+                    });
+
+                    let percentage = (score / data.questions.length) * 100;
+                    document.getElementById('result').innerHTML = `<h3>Vous avez obtenu ${score} sur ${data.questions.length} (${percentage.toFixed(2)}%)</h3>`;
+
+                    // Désactiver le bouton de soumission
+                    document.getElementById('submit-button').disabled = true;
+                };
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des questions:', error);
+            });
+    </script>
+</body>
+</html>

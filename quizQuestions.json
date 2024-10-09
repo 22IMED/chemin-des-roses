@@ -1,0 +1,114 @@
+{
+    "questions": [
+        {
+            "question": "Quel est le rôle des hormones dans le développement du cancer du sein ?",
+            "options": [
+                { "value": "A", "text": "Elles n'ont aucun effet" },
+                { "value": "B", "text": "Elles peuvent favoriser la croissance des cellules cancéreuses" },
+                { "value": "C", "text": "Elles protègent contre le cancer" },
+                { "value": "D", "text": "Elles ne sont pertinentes qu'après la ménopause" }
+            ],
+            "answer": "B",
+            "explanation": "Les œstrogènes et d'autres hormones peuvent stimuler la croissance de certaines cellules du sein, augmentant ainsi le risque de cancer."
+        },
+        {
+            "question": "À quel âge est-il recommandé de commencer le dépistage mammographique pour les femmes à risque moyen ?",
+            "options": [
+                { "value": "A", "text": "20 ans" },
+                { "value": "B", "text": "30 ans" },
+                { "value": "C", "text": "40 ans" },
+                { "value": "D", "text": "50 ans" }
+            ],
+            "answer": "C",
+            "explanation": "Les recommandations générales conseillent de commencer le dépistage mammographique vers l'âge de 40 ans, selon les facteurs de risque individuels."
+        },
+        {
+            "question": "Quel est le symptôme le plus courant du cancer du sein ?",
+            "options": [
+                { "value": "A", "text": "Écoulement du mamelon" },
+                { "value": "B", "text": "Douleur au sein" },
+                { "value": "C", "text": "Changement de taille ou de forme" },
+                { "value": "D", "text": "Bosse dans le sein" }
+            ],
+            "answer": "D",
+            "explanation": "Une bosse ou un nodule dans le sein est souvent le premier signe de cancer du sein."
+        },
+        {
+            "question": "Quel pourcentage de cas de cancer du sein est détecté chez les hommes ?",
+            "options": [
+                { "value": "A", "text": "1%" },
+                { "value": "B", "text": "3%" },
+                { "value": "C", "text": "10%" },
+                { "value": "D", "text": "15%" }
+            ],
+            "answer": "A",
+            "explanation": "Moins de 1 % des cas de cancer du sein surviennent chez les hommes, mais il est important d'en parler."
+        },
+        {
+            "question": "Quel est l'objectif principal d'Octobre Rose ?",
+            "options": [
+                { "value": "A", "text": "Augmenter le financement pour la recherche" },
+                { "value": "B", "text": "Sensibiliser au dépistage précoce du cancer du sein" },
+                { "value": "C", "text": "Réduire le tabou autour du cancer" },
+                { "value": "D", "text": "Toutes les réponses ci-dessus" }
+            ],
+            "answer": "D",
+            "explanation": "Octobre Rose vise à sensibiliser sur l'importance du dépistage, à récolter des fonds pour la recherche et à briser le tabou autour du cancer du sein."
+        },
+        {
+            "question": "Quel type de test est utilisé pour dépister le cancer du sein ?",
+            "options": [
+                { "value": "A", "text": "IRM" },
+                { "value": "B", "text": "Mammographie" },
+                { "value": "C", "text": "Échographie" },
+                { "value": "D", "text": "Biopsie" }
+            ],
+            "answer": "B",
+            "explanation": "La mammographie est l'examen standard pour le dépistage du cancer du sein."
+        },
+        {
+            "question": "Quelle méthode est utilisée pour obtenir un diagnostic définitif du cancer du sein ?",
+            "options": [
+                { "value": "A", "text": "Mammographie" },
+                { "value": "B", "text": "Échographie" },
+                { "value": "C", "text": "Biopsie" },
+                { "value": "D", "text": "Scanner" }
+            ],
+            "answer": "C",
+            "explanation": "La biopsie permet de prélever des cellules du sein pour les analyser, fournissant ainsi un diagnostic définitif du cancer."
+        },
+        {
+            "question": "Quel est le principal traitement du cancer du sein ?",
+            "options": [
+                { "value": "A", "text": "Radiothérapie" },
+                { "value": "B", "text": "Chirurgie" },
+                { "value": "C", "text": "Chimiothérapie" },
+                { "value": "D", "text": "Hormono-thérapie" }
+            ],
+            "answer": "B",
+            "explanation": "La chirurgie est souvent le principal traitement pour enlever la tumeur, suivie d'autres traitements selon le cas."
+        },
+        {
+            "question": "Quelle est l'importance de l'auto-examen des seins ?",
+            "options": [
+                { "value": "A", "text": "Remplacer les mammographies" },
+                { "value": "B", "text": "Détecter le cancer à un stade précoce" },
+                { "value": "C", "text": "Évaluer la douleur au sein" },
+                { "value": "D", "text": "Aucun intérêt" }
+            ],
+            "answer": "B",
+            "explanation": "L'auto-examen permet de détecter des anomalies qui peuvent être signalées lors d'une consultation médicale."
+        },
+        {
+            "question": "Quel pourcentage des cancers du sein est détecté à un stade précoce grâce au dépistage ?",
+            "options": [
+                { "value": "A", "text": "20%" },
+                { "value": "B", "text": "50%" },
+                { "value": "C", "text": "80%" },
+                { "value": "D", "text": "90%" }
+            ],
+            "answer": "C",
+            "explanation": "Le dépistage régulier permet de détecter environ 80 % des cancers du sein à un stade précoce, ce qui améliore considérablement les chances de traitement efficace."
+        }
+    ]
+}
