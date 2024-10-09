@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prédiction de Diagnostic</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #E299AD;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        #chat {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .user-message {
+            text-align: right;
+            background-color: #fad1dd;
+            color: #ac596f;
+        }
+
+        .bot-message {
+            text-align: left;
+            background-color: #fcb9cc;
+            color: #ac596f;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #user-input {
+            width: calc(100% - 50px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0;
+            font-size: 16px;
+        }
+
+        #send-button {
+            padding: 10px;
+            background-color: #873E53;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        #send-button:hover {
+            background-color: #c95c7b;
+        }
+
+        #result {
+            text-align: center;
+            font-size: 20px;
+            color: #333;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prédiction de Diagnostic</h1>
+        <div id="chat"></div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Répondez ici..." />
+            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+        </div>
+
+        <h2 id="result"></h2>
+    </div>
+
+    <script>
+        // Questions et réponses à envoyer
+        let questions = [
+            { question: "Avez-vous un nodule ? (oui/non)", key: "Nodule" },
+            { question: "Ressentez-vous de la douleur ? (oui/non)", key: "Douleur" },
+            { question: "Y a-t-il eu un changement de forme ? (oui/non)", key: "Changement_de_forme" },
+            { question: "Y a-t-il un écoulement ? (oui/non)", key: "Écoulement" },
+            { question: "Avez-vous une rougeur ? (oui/non)", key: "Rougeur" },
+            { question: "Avez-vous des ganglions ? (oui/non)", key: "Ganglions" },
+            { question: "Y a-t-il des antécédents familiaux ? (oui/non)", key: "Antécédents_familiaux" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let answers = {};
+
+        // Mots-clés pour les réponses "oui" et "non"
+        const yesAnswers = [
+            'oui', 'yes', 'ouais', 'affirmatif', 'certainement',
+            'absolument', 'exactement', 'tout à fait', 'tout a fait', 
+            'bien sûr', 'sans doute', 'ouais', 'yes'
+        ];
+        
+        const noAnswers = [
+            'non', 'no', 'nah', 'pas du tout', 'absolument pas', 
+            'jamais', 'négation', 'non merci', 'non pas vraiment'
+        ];
+
+        // Mots ou phrases à détecter
+        const specificValues = [
+            'sensation', 'symptôme', 'anomalie', 'visite chez le médecin'
+        ];
+
+        function addMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + type + '-message';
+            messageDiv.textContent = text;
+            document.getElementById('chat').appendChild(messageDiv);
+            document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight; // Faire défiler vers le bas
+        }
+
+        function askQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                addMessage(questions[currentQuestionIndex].question, 'bot');
+            } else {
+                // Si toutes les questions sont posées, prédisez le diagnostic
+                predict();
+            }
+        }
+
+        async function predict() {
+            // Envoyer les réponses à l'API Flask
+            const response = await fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(answers)
+            });
+
+            if (!response.ok) {
+                addMessage('Erreur lors de la prédiction', 'bot');
+                return;
+            }
+
+            const result = await response.json();
+            document.getElementById('result').innerText = `Diagnostic : ${result.prediction}`;
+            addMessage(`Diagnostic : ${result.prediction}`, 'bot'); // Afficher le diagnostic dans le chat
+        }
+
+        document.getElementById('send-button').addEventListener('click', () => {
+            const userInput = document.getElementById('user-input').value.toLowerCase().trim();
+            
+            // Nettoyer la réponse pour la normaliser
+            const cleanedInput = userInput.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').replace(/\s+/g, ' '); // Enlève caractères spéciaux et espaces multiples
+
+            // Vérification de la réponse de l'utilisateur
+            if (isYes(cleanedInput)) {
+                answers[questions[currentQuestionIndex].key] = 'oui';
+            } else if (isNo(cleanedInput)) {
+                answers[questions[currentQuestionIndex].key] = 'non';
+            } else {
+                // Vérifier si le texte contient des valeurs spécifiques
+                if (containsSpecificValues(cleanedInput)) {
+                    addMessage('Vous avez mentionné des éléments importants. Veuillez continuer.', 'bot');
+                } else {
+                    addMessage('Veuillez répondre par "oui" ou "non".', 'bot');
+                    return;
+                }
+            }
+
+            // Afficher le message de l'utilisateur
+            addMessage(userInput, 'user');
+
+            // Passer à la question suivante
+            currentQuestionIndex++;
+            document.getElementById('user-input').value = '';
+            askQuestion();
+        });
+
+        // Fonction pour vérifier si la réponse est un "oui"
+        function isYes(input) {
+            return yesAnswers.some(answer => input.includes(answer));
+        }
+
+        // Fonction pour vérifier si la réponse est un "non"
+        function isNo(input) {
+            return noAnswers.some(answer => input.includes(answer));
+        }
+
+        // Fonction pour vérifier si le texte contient des valeurs spécifiques
+        function containsSpecificValues(input) {
+            return specificValues.some(value => input.includes(value));
+        }
+
+        // Commencer le processus
+        askQuestion();
+    </script>
+</body>
+</html>
