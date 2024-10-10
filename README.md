@@ -18,4 +18,25 @@ Dans la ligne de commande, accédez au répertoire du projet :
 cd chemin-des-roses
 ```
 
+Pour démarrer l'API, exécutez la commande suivante :
+
+```bash
+python Server.py
+```
+
+## Étape 3 : Lancement du front-end
+Lancez le serveur web local en exécutant la commande suivante :
+
+```bash
+python -m http.server 8000
+```
+
+## Étape 4 : Accéder au Chatbot et au Quizz
+
+Pour ouvrir le Chatbot : `http://localhost:8000/Breast_cancer.html`
+Pour lancer le Quizz : `http://localhost:8000/Quizz.html`
+
+
+
+
 
