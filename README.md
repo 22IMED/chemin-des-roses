@@ -4,6 +4,7 @@
 
 ## Étape 1 : Installation des dépendances
 Pour lancer le Chatbot, installez les dépendances répertoriées dans le fichier `requirements.txt` :
+avec la version de python `Python 3.9.0`
 
 ```bash
 pip install -r requirements.txt
