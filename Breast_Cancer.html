@@ -213,7 +213,8 @@
         }
 
         document.getElementById('send-button').addEventListener('click', () => {
-            const userInput = document.getElementById('user-input').value.toLowerCase().trim();
+            let userInput = document.getElementById('user-input').value.toLowerCase().trim();
+            userInput = userInput.replace(/[^a-zA-Z0-9]/g, '').trim();
             const cleanedInput = userInput.replace(/[^0-9]/g, '').trim();
 
             if (askingDepartment) {
